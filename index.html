@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian &mdash; Hospital Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===================== SPLASH SCREEN ===================== -->
+<section id="splashScreen" class="splash-screen">
+  <div class="splash-inner">
+    <span class="pulse-dot splash-pulse"></span>
+    <span class="splash-word">Meridian</span>
+    <p class="splash-tag">Ward &amp; outpatient management console</p>
+    <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+  </div>
+</section>
+
+<!-- ===================== LOGIN SCREEN ===================== -->
+<section id="loginScreen" class="login-screen hidden">
+  <div class="login-card">
+    <div class="login-brand">
+      <span class="pulse-dot"></span>
+      <span class="brand-word">Meridian</span>
+    </div>
+    <p class="login-sub">Ward &amp; outpatient management console</p>
+
+    <div class="role-tabs" id="roleTabs">
+      <button type="button" class="role-tab" data-role="admin">Admin</button>
+      <button type="button" class="role-tab" data-role="doctor">Doctor</button>
+      <button type="button" class="role-tab active" data-role="patient">Patient</button>
+    </div>
+
+    <form id="loginForm">
+      <label class="field">
+        <span>Username</span>
+        <input type="text" id="loginUser" placeholder="username" required autocomplete="username">
+      </label>
+      <label class="field">
+        <span>Passcode</span>
+        <input type="password" id="loginPass" placeholder="passcode" required autocomplete="current-password">
+      </label>
+      <p id="loginError" class="login-error"></p>
+      <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+    </form>
+
+    <button type="button" id="showSignupBtn" class="btn btn-ghost btn-block signup-toggle">+ Create new account</button>
+  </div>
+</section>
+
+<!-- ===================== SIGNUP SCREEN ===================== -->
+<section id="signupScreen" class="login-screen hidden">
+  <div class="login-card signup-card">
+    <div class="login-brand">
+      <span class="pulse-dot"></span>
+      <span class="brand-word">Meridian</span>
+    </div>
+    <p class="login-sub">Create a patient or doctor account</p>
+
+    <div class="role-tabs" id="signupRoleTabs">
+      <button type="button" class="role-tab active" data-role="patient">I'm a patient</button>
+      <button type="button" class="role-tab" data-role="doctor">I'm a doctor</button>
+    </div>
+
+    <form id="signupForm">
+      <div class="field">
+        <span>Full name</span>
+        <input type="text" id="su_name" required>
+      </div>
+
+      <!-- Patient-only fields -->
+      <div id="su_patientFields">
+        <div class="field-row">
+          <label class="field">
+            <span>Age</span>
+            <input type="number" id="su_age" min="0" max="130">
+          </label>
+          <label class="field">
+            <span>Gender</span>
+            <select id="su_gender">
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </label>
+        </div>
+        <div class="field-row">
+          <label class="field">
+            <span>Blood group</span>
+            <select id="su_blood">
+              <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+              <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Contact number</span>
+            <input type="text" id="su_contact">
+          </label>
+        </div>
+      </div>
+
+      <!-- Doctor-only fields -->
+      <div id="su_doctorFields" class="hidden">
+        <div class="field-row">
+          <label class="field">
+            <span>Department</span>
+            <input type="text" id="su_dept" placeholder="e.g. Cardiology">
+          </label>
+          <label class="field">
+            <span>Years of experience</span>
+            <input type="number" id="su_exp" min="0" max="60">
+          </label>
+        </div>
+        <div class="field">
+          <span>Phone</span>
+          <input type="text" id="su_phone">
+        </div>
+      </div>
+
+      <div class="field">
+        <span>Email</span>
+        <input type="email" id="su_email">
+      </div>
+
+      <div class="field-row">
+        <label class="field">
+          <span>Choose a username</span>
+          <input type="text" id="su_username" required autocomplete="username">
+        </label>
+        <label class="field">
+          <span>Choose a password</span>
+          <input type="password" id="su_password" required autocomplete="new-password">
+        </label>
+      </div>
+      <p id="signupError" class="login-error"></p>
+      <button type="submit" class="btn btn-primary btn-block">Create account</button>
+    </form>
+
+    <button type="button" id="backToLoginBtn" class="btn btn-ghost btn-block signup-toggle">&larr; Back to sign in</button>
+  </div>
+</section>
+
+<!-- ===================== APP SHELL ===================== -->
+<div id="appShell" class="app-shell hidden">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="pulse-dot"></span>
+      <span class="brand-word">Meridian</span>
+    </div>
+
+    <nav class="nav" id="navContainer"></nav>
+
+    <div class="sidebar-foot">
+      <div class="staff-card">
+        <div class="staff-avatar" id="staffAvatar">A</div>
+        <div>
+          <div class="staff-name" id="staffName">Admin</div>
+          <div class="staff-role" id="staffRole">Front desk</div>
+        </div>
+      </div>
+      <button id="logoutBtn" class="btn btn-ghost btn-block">Sign out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- ---------- DASHBOARD ---------- -->
+    <section id="view-dashboard" class="view active">
+      <header class="view-head">
+        <div>
+          <p class="eyebrow">Overview</p>
+          <h1 id="dashboardGreeting">Good to see you</h1>
+        </div>
+        <div class="today" id="todayDate"></div>
+      </header>
+
+      <div class="stat-grid" id="statGrid"></div>
+
+      <div class="vitals-divider" aria-hidden="true">
+        <svg viewBox="0 0 1000 60" preserveAspectRatio="none">
+          <polyline points="0,30 150,30 175,10 200,50 225,30 400,30 425,15 450,45 475,30 650,30 675,8 700,52 725,30 1000,30" />
+        </svg>
+      </div>
+
+      <div class="panel-row">
+        <div class="panel">
+          <div class="panel-head">
+            <h2 id="upcomingHeading">Upcoming appointments</h2>
+            <button class="link-btn" data-view="appointments">View all</button>
+          </div>
+          <div id="upcomingList" class="list"></div>
+        </div>
+
+        <div class="panel" id="secondPanel">
+          <div class="panel-head">
+            <h2>Recently admitted</h2>
+            <button class="link-btn" data-view="patients">View all</button>
+          </div>
+          <div id="recentPatients" class="list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- PATIENTS ---------- -->
+    <section id="view-patients" class="view">
+      <header class="view-head">
+        <div>
+          <p class="eyebrow">Records</p>
+          <h1>Patients</h1>
+        </div>
+        <button class="btn btn-primary" id="addPatientBtn">+ Admit patient</button>
+      </header>
+
+      <div class="toolbar">
+        <input type="search" id="patientSearch" placeholder="Search by name, ID or condition&hellip;">
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>Name</th><th>Age</th><th>Gender</th><th>Condition</th><th>Blood grp.</th><th>Contact</th><th>Admitted</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="patientsTable"></tbody>
+        </table>
+        <p id="patientsEmpty" class="empty-state hidden">No patients yet.</p>
+      </div>
+    </section>
+
+    <!-- ---------- DOCTORS ---------- -->
+    <section id="view-doctors" class="view">
+      <header class="view-head">
+        <div>
+          <p class="eyebrow">Staff</p>
+          <h1>Doctors</h1>
+        </div>
+        <button class="btn btn-primary" id="addDoctorBtn">+ Add doctor</button>
+      </header>
+
+      <div class="toolbar">
+        <input type="search" id="doctorSearch" placeholder="Search by name or department&hellip;">
+      </div>
+
+      <div class="card-grid" id="doctorsGrid"></div>
+      <p id="doctorsEmpty" class="empty-state hidden">No doctors yet.</p>
+    </section>
+
+    <!-- ---------- APPOINTMENTS ---------- -->
+    <section id="view-appointments" class="view">
+      <header class="view-head">
+        <div>
+          <p class="eyebrow">Schedule</p>
+          <h1 id="apptHeading">Appointments</h1>
+        </div>
+        <button class="btn btn-primary" id="addApptBtn">+ Book appointment</button>
+      </header>
+
+      <div class="toolbar">
+        <select id="apptFilter">
+          <option value="all">All statuses</option>
+          <option value="Scheduled">Scheduled</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Reason</th><th>Status</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="apptTable"></tbody>
+        </table>
+        <p id="apptEmpty" class="empty-state hidden">No appointments booked yet.</p>
+      </div>
+    </section>
+
+    <!-- ---------- WARDS ---------- -->
+    <section id="view-wards" class="view">
+      <header class="view-head">
+        <div>
+          <p class="eyebrow">Capacity</p>
+          <h1>Ward beds</h1>
+        </div>
+      </header>
+      <p class="section-note">Click a bed to toggle it between free and occupied.</p>
+      <div id="wardGroups"></div>
+    </section>
+
+    <!-- ---------- PROFILE ---------- -->
+    <section id="view-profile" class="view">
+      <header class="view-head">
+        <div>
+          <p class="eyebrow">Account</p>
+          <h1>My profile</h1>
+        </div>
+      </header>
+      <div class="panel" style="max-width:480px;">
+        <div id="profilePanel"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===================== MODAL ===================== -->
+<div id="modalBackdrop" class="modal-backdrop hidden">
+  <div class="modal" id="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">Title</h3>
+      <button class="modal-close" id="modalClose">&times;</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
